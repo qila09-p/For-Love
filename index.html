@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: url('T - lo.jpg') no-repeat center center/cover;
+            font-family: 'Dancing Script';
+            transition: background 1s ease;
+        }
+
+        .lyrics-container {
+            text-align: center;
+            color: rgb(255, 255, 255);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            font-size: 2rem;
+            line-height: 1.6;
+            padding: 0 20px;
+            display: none;
+            z-index: 10; /* Make sure it's above the confetti */
+        }
+
+        .line {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 2s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .new-content {
+            display: none;
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        #playButton {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #playButton:hover {
+            background-color: #ff4500;
+        }
+
+        /* Confetti shape */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff6347;
+            opacity: 0;
+            animation: fallConfetti 5s ease-in-out infinite;
+        }
+
+        .confetti:nth-child(odd) {
+            background-color: #ff4500;
+        }
+
+        .confetti:nth-child(even) {
+            background-color: #32cd32;
+        }
+
+        @keyframes fallConfetti {
+            0% {
+                top: -20px;
+                opacity: 1;
+                transform: rotate(0deg);
+            }
+            50% {
+                opacity: 0.5;
+                transform: rotate(180deg);
+            }
+            100% {
+                top: 100%;
+                opacity: 1;
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Left side confetti */
+        .confetti-left {
+            left: 0%;
+            animation-duration: 4s; /* Different speed for left side */
+        }
+
+        /* Right side confetti */
+        .confetti-right {
+            right: 0%;
+            animation-duration: 6s; /* Different speed for right side */
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <button id="playButton">Play</button>
+        <div class="lyrics-container" id="lyrics-container">
+            <!-- Lyrics will be dynamically added here -->
+        </div>
+        <div class="new-content" id="new-content">
+            <h1>Hi My Love!</h1>
+            <p>You are The Best Thing in My Life❤️!</p>
+            <p>"Aku buat ini gabut aja sih, aku juga tau ini gk seberapa tapi semoga suka yaa..."</p>
+        </div>
+    </div>
+
+    <audio id="audio" src="blue (Official Music Video) - Copy.mp3"></audio>
+
+    <script>
+        const lyrics = [
+            { text: "Your morning eyes, I could stare like watching stars", time: 18 },
+            { text: "I could walk you by, and I'll tell without a thought", time: 25 },
+            { text: "You'd be mine, would you mind if I took your hand tonight?", time: 32 },
+            { text: "Know you're all that I want this life", time: 39 },
+            { text: "I'll imagine we fell in love", time: 48 },
+            { text: "I'll nap under moonlight skies with you", time: 50 },
+            { text: "I think I'll picture us, you with the waves", time: 54 },
+            { text: "The ocean's colors on your face", time: 58 },
+            { text: "I'll leave my heart with your air", time: 61 },
+            { text: "So let me fly with you", time: 66 },
+            { text: "Will you be forever with me?", time: 70 },
+        ];
+
+        const container = document.getElementById('lyrics-container');
+        const playButton = document.getElementById('playButton');
+        const audio = document.getElementById('audio');
+
+        playButton.addEventListener('click', () => {
+            // Play the audio when the button is clicked
+            audio.play();
+
+            // Hide the Play button
+            playButton.style.display = 'none';
+
+            // Set a delay (e.g., 1 second) before showing the lyrics
+            setTimeout(() => {
+                // Show the lyrics container
+                container.style.display = 'block';
+            }, 1000); // Delay 1 second before showing the lyrics
+        });
+
+        // Event listener to update lyrics based on audio time
+        audio.addEventListener('timeupdate', () => {
+            const currentTime = audio.currentTime;
+
+            lyrics.forEach((lyric, index) => {
+                // Check if the current time is close to the time when the lyric should appear
+                if (currentTime >= lyric.time && currentTime < lyric.time + 2) {
+                    // Create and display the lyric
+                    const div = document.createElement('div');
+                    div.classList.add('line');
+                    div.textContent = lyric.text;  // Pastikan kita hanya menampilkan text-nya
+                    div.style.animationDelay = `${index * 3}s`;
+                    container.appendChild(div);
+                    lyrics.splice(index, 1); // Remove lyric once it's shown
+                }
+            });
+        });
+
+        // Calculate total duration before changing the page content
+        const totalDuration = lyrics[lyrics.length - 1].time + 5;  // Adding a few seconds to ensure the last lyric is displayed
+
+        // Wait until all lyrics have appeared before changing background and content
+        setTimeout(() => {
+            document.getElementById('lyrics-container').style.display = 'none';
+            document.getElementById('new-content').style.display = 'block';
+            document.body.style.background = 'url("Cat - lo.jpg") no-repeat center center/cover';
+        }, totalDuration * 1000);
+
+        setTimeout(() => {
+            document.body.style.background = 'url("Sky - lo.jpg") no-repeat center center/cover';
+        }, totalDuration * 1000 + 5000);
+
+        setTimeout(() => {
+            const newContent = document.getElementById('new-content');
+            newContent.innerHTML = `
+                <h1>You are My Everything!</h1>
+                <p>Thank you for being here with me ❤️</p>
+                <p>"I made this just to show how much I care, semoga natal tahun ini yang terbaik buat mu"</p>
+            `;
+        }, totalDuration * 1000 + 5000);
+
+        // Function to generate 1 confetti falling from left and 1 from right at random positions
+        function createConfetti() {
+            // Left side confetti (1 confetti falling at random position)
+            const confettiLeft = document.createElement('div');
+            confettiLeft.classList.add('confetti', 'confetti-left');
+            confettiLeft.style.top = Math.random() * 100 + '%'; // Randomize vertical position
+            confettiLeft.style.left = Math.random() * 100 + '%'; // Randomize horizontal position on the left
+            document.body.appendChild(confettiLeft);
+
+            // Right side confetti (1 confetti falling at random position)
+            const confettiRight = document.createElement('div');
+            confettiRight.classList.add('confetti', 'confetti-right');
+            confettiRight.style.top = Math.random() * 100 + '%'; // Randomize vertical position
+            confettiRight.style.right = Math.random() * 100 + '%'; // Randomize horizontal position on the right
+            document.body.appendChild(confettiRight);
+        }
+
+        // Trigger confetti effect every 5 seconds
+        setInterval(createConfetti, 5000);
+    </script>
+</body>
+</html>
+
+
+
